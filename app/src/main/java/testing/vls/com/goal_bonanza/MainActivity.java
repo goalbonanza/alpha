@@ -3,19 +3,17 @@ package testing.vls.com.goal_bonanza;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
 import org.web3j.abi.datatypes.Address;
-import org.web3j.abi.datatypes.Utf8String;
 import org.web3j.abi.datatypes.generated.Uint256;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.Web3jFactory;
-import org.web3j.protocol.core.DefaultBlockParameterName;
-import org.web3j.protocol.core.methods.response.EthGetBalance;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.web3j.protocol.core.methods.response.Web3ClientVersion;
 import org.web3j.protocol.http.HttpService;
 
 import java.math.BigInteger;
@@ -24,7 +22,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     Web3j web3;
 
@@ -36,38 +34,55 @@ public class MainActivity extends AppCompatActivity {
 
     Credentials credentials = Credentials.create(myPrivateKey);
 
-    TextView textView;
-    TextView textView1;
+    TextView txtView_balance;
+    TextView txtView_trans_receipt;
+    EditText etxt_amount;
+    Button btn_place_bet;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        textView = (TextView) findViewById(R.id.txtBalance);
-        textView1 = (TextView) findViewById(R.id.txtReceipt);
+        txtView_balance = (TextView) findViewById(R.id.txtBalance);
+        txtView_trans_receipt = (TextView) findViewById(R.id.txtReceipt);
+        etxt_amount = (EditText) findViewById(R.id.etxt_amount_token);
+        btn_place_bet = (Button) findViewById(R.id.btnSendBet);
+        btn_place_bet.setOnClickListener(this);
 
         web3 = Web3jFactory.build(new HttpService("https://ropsten.infura.io/PAIMKYJh3XJa5HI1zekm"));
+        checkGoalBalance();
 
+    }
+
+    private void checkGoalBalance() {
         MyToken token = MyToken.load(tokenAddress, web3, credentials, new BigInteger(String.valueOf(300000)), new  BigInteger(String.valueOf(24)));
         Future<Uint256> myBalance = token.balanceOf(new Address(myAddress));
         try {
             Uint256 uint256  = myBalance.get();
-            textView.setText(uint256.getValue().toString());
+            txtView_balance.setText(uint256.getValue().toString());
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
-
-        new WriteTask().execute();
     }
 
-    private class WriteTask extends AsyncTask<String, String, String> {
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.btnSendBet :
+                new SendBet().execute();
+                break;
+        }
+    }
+
+    private class SendBet extends AsyncTask<String, String, String> {
         @Override
         protected String doInBackground(String... params) {
             String result = null;
 
             try {
-                Uint256 amountToTransfer = new Uint256(10);
+                long amount = Long.parseLong(etxt_amount.getText().toString());
+                Uint256 amountToTransfer = new Uint256(amount);
                 MyToken token = MyToken.load(tokenAddress, web3, credentials, BigInteger.valueOf(30 + 500000000000L), new  BigInteger(String.valueOf(500000)));
                 TransactionReceipt receipt = token.transfer(new Address(addressTransfer), amountToTransfer).get(3, TimeUnit.MINUTES);
                 result = receipt.getGasUsed().toString();
@@ -85,7 +100,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            textView1.setText(result);
+            txtView_trans_receipt.setText(result);
+            checkGoalBalance();
+            etxt_amount.setText("");
         }
     }
 }
