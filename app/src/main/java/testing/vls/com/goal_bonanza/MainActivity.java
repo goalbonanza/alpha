@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Uint256 amountToTransfer = new Uint256(amount);
                 MyToken token = MyToken.load(tokenAddress, web3, credentials, BigInteger.valueOf(30 + 500000000000L), new  BigInteger(String.valueOf(500000)));
                 TransactionReceipt receipt = token.transfer(new Address(addressTransfer), amountToTransfer).get(3, TimeUnit.MINUTES);
-                result = receipt.getGasUsed().toString();
+                result = receipt.getTransactionHash();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {
