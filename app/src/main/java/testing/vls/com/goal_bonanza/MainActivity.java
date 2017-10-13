@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Future<Uint256> myBalance = token.balanceOf(new Address(myAddress));
         try {
             Uint256 uint256  = myBalance.get();
-            txtView_balance.setText(uint256.getValue().toString());
+            txtView_balance.setText(uint256.getValue().toString() + " Tokens (remaining)");
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
