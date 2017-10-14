@@ -26,11 +26,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     Web3j web3;
 
-    String tokenAddress = "0x99cb673eCBcfCBf68eDf066F74D025f4092609D9";
-    String myAddress = "0x8b811dad25ad26856da0422e7b51c3ff0b685722";
-    String myPrivateKey = "78a54dbc9c4ab002a2a07441200fa5fc64160ea9f199a14da8384317c6173e07";
+    String gbTokenAddress = "0x0";
+    String myAddress = "0x0";
+    String myPrivateKey = "private_key";
 
-    String addressTransfer = "0xE2f0e24b2deB1885d8cDbd2FD10Ee1b806007296";
+    String gbEthaddress = "0x0";
 
     Credentials credentials = Credentials.create(myPrivateKey);
 
@@ -48,13 +48,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btn_place_bet = (Button) findViewById(R.id.btnSendBet);
         btn_place_bet.setOnClickListener(this);
 
-        web3 = Web3jFactory.build(new HttpService("https://ropsten.infura.io/PAIMKYJh3XJa5HI1zekm"));
+        web3 = Web3jFactory.build(new HttpService());
         checkGoalBalance();
 
     }
 
     private void checkGoalBalance() {
-        MyToken token = MyToken.load(tokenAddress, web3, credentials, new BigInteger(String.valueOf(300000)), new  BigInteger(String.valueOf(24)));
+        MyToken token = MyToken.load(gbTokenAddress, web3, credentials, new BigInteger(String.valueOf(300000)), new  BigInteger(String.valueOf(24)));
         Future<Uint256> myBalance = token.balanceOf(new Address(myAddress));
         try {
             Uint256 uint256  = myBalance.get();
@@ -83,8 +83,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             try {
                 long amount = Long.parseLong(etxt_amount.getText().toString());
                 Uint256 amountToTransfer = new Uint256(amount);
-                MyToken token = MyToken.load(tokenAddress, web3, credentials, BigInteger.valueOf(30 + 500000000000L), new  BigInteger(String.valueOf(500000)));
-                TransactionReceipt receipt = token.transfer(new Address(addressTransfer), amountToTransfer).get(3, TimeUnit.MINUTES);
+                MyToken token = MyToken.load(gbTokenAddress, web3, credentials, BigInteger.valueOf(30 + 500000000000L), new  BigInteger(String.valueOf(500000)));
+                TransactionReceipt receipt = token.transfer(new Address(gbEthaddress), amountToTransfer).get(3, TimeUnit.MINUTES);
                 result = receipt.getTransactionHash();
             } catch (InterruptedException e) {
                 e.printStackTrace();
