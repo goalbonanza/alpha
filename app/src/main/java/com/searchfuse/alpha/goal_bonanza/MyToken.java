@@ -1,4 +1,4 @@
-package testing.vls.com.goal_bonanza;
+package com.searchfuse.alpha.goal_bonanza;
 
 import java.math.BigInteger;
 import java.util.ArrayList;

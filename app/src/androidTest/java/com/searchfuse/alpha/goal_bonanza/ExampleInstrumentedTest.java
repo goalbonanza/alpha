@@ -1,4 +1,4 @@
-package testing.vls.com.goal_bonanza;
+package com.searchfuse.alpha.goal_bonanza;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

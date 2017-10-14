@@ -1,4 +1,4 @@
-package testing.vls.com.goal_bonanza;
+package com.searchfuse.alpha.goal_bonanza;
 
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
